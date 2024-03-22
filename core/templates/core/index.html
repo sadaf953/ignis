@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block heading %}Browse Events {% endblock %}
+{% block extra_css %}
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+{% block rightbuttons %}
+    {% if request.user.is_authenticated %} 
+        <div class="pr-4">
+            <a href="{% url 'dashboard:index' %}" class="text-lg text-gray-400 hover:text-gray-700">Dashboard</a>
+        </div>
+        <div class="pr-4">
+            <a href="{% url 'item:new' %}" class="text-lg text-gray-400 hover:text-gray-700">Host an event</a>
+        </div>
+    {% else %} 
+        <div class="pr-4">
+            <a href="{% url 'core:signup' %}" class="px-6 py-3 text-lg font-semibold bg-green-600 text-white rounded-xl hover:bg-green-700">Sign up</a>
+        </div>
+        <div class="pr-4">
+            <a href="{% url 'core:login' %}" class="px-6 py-3 text-lg font-semibold bg-black text-white rounded-xl hover:bg-gray-700">Log in</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <div class="grid grid-cols-3 gap-5">
+        {% for event in events %}
+            <div class="p-6 bg-white rounded-b-xl flex flex-col">
+                <a href="{% url 'item:detail' event.id %}" class="flex items-center">
+                    <div>
+                        <img src="{{ event.image.url }}" class="rounded-t-xl h-40 w-60 object-cover">
+                    </div>
+                    <div class="p-6 bg-white rounded-b-xl flex-1">
+                        <h2 class="text-2xl">{{ event.event_name }}</h2>
+                        <p class="text-gray-500">{{ event.date }} | {{ event.time }}</p>
+                        <p class="text-gray-500">{{ event.location }}</p>
+                    </div>
+                </a>
+                <!-- index.html -->
+<!-- index.html -->
+<button type="button" class="btn btn-light ml-auto pr-5" onclick="toggleLike({{ event.id }})">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi {% if request.user in event.is_liked.all %}bi-heart-fill{% else %}bi-heart{% endif %}" viewBox="0 0 16 16">
+        {% if request.user in event.is_liked.all %}
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+        {% else %}
+            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+        {% endif %}
+    </svg>
+</button>
+
+
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+<script>
+    function toggleLike(eventId) {
+        fetch(`/toggle-like/${eventId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // Add CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update the interface to reflect the new liked status
+                var heartIcon = document.querySelector('#likeButton' + eventId + ' .heart-icon');
+                heartIcon.classList.toggle('bi-heart');
+                heartIcon.classList.toggle('bi-heart-fill');
+            } else {
+                console.error('Error toggling like status');
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling like status:', error);
+        });
+    }
+</script>

@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% block title %}Welcome{% endblock %}
+
+{% block extra_css %}
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+{% block rightbuttons %} <a href="{% url 'dashboard:index' %}" class="text-lg text-gray-400 hover:text-gray-700 pr-4">Browse event</a>
+<a href="{% url 'item:new' %}" class="text-lg text-gray-400 hover:text-gray-700 pr-4">Host an event</a>
+        {% endblock %}
+
+
+<!-- Your HTML code remains unchanged -->
+
+{% block content %}
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <div class="grid grid-cols-1 gap-5">
+        {% for event in events %}
+            <div id="event_{{ event.id }}" class="p-6 bg-white rounded-b-xl flex justify-between items-center">
+                <a href="{% url 'item:detail' event.id %}" class="flex items-center">
+                    <div>
+                        <img src="{{ event.image.url }}" class="rounded-t-xl h-40 w-60 object-cover">
+                    </div>
+                    <div class="p-6 bg-white rounded-b-xl flex-1">
+                        <h2 class="text-2xl">{{ event.event_name }}</h2>
+                        <p class="text-gray-500">{{ event.date }} | {{ event.time }}</p>
+                        <p class="text-gray-500">{{ event.location }}</p>
+                    </div>
+                </a>
+        
+                <!-- Heart button -->
+                <button type="button" class="btn btn-light ml-auto pr-5" onclick="hideEvent({{ event.id }})">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-heart-fill" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+    </svg>
+</button>
+
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Restore the hidden state of events on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        var hiddenEvents = JSON.parse(localStorage.getItem('hiddenEvents')) || [];
+        hiddenEvents.forEach(function(eventId) {
+            var eventElement = document.getElementById('event_' + eventId);
+            if (eventElement) {
+                eventElement.style.display = 'none';
+            }
+        });
+
+        // Add event listener to all heart buttons
+        document.querySelectorAll('.btn.btn-light').forEach(button => {
+            button.addEventListener('click', function() {
+                // Get the event ID from the button's data attribute
+                var eventId = this.getAttribute('data-event-id');
+                hideEvent(eventId);
+            });
+        });
+
+        function hideEvent(eventId) {
+            // Hide the event element from the DOM
+            var eventElement = document.getElementById('event_' + eventId);
+            if (eventElement) {
+                eventElement.style.display = 'none';
+
+                // Save the hidden event ID to localStorage
+                var hiddenEvents = JSON.parse(localStorage.getItem('hiddenEvents')) || [];
+                if (!hiddenEvents.includes(eventId)) {
+                    hiddenEvents.push(eventId);
+                    localStorage.setItem('hiddenEvents', JSON.stringify(hiddenEvents));
+                }
+            } else {
+                console.error('Event element with ID', eventId, 'not found');
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ event.event_name }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-5 gap-6">
+    <div class="col-span-3">
+        <img src="{{ event.image.url }}" class="rounded-xl">
+    </div>
+
+    <div class="col-span-2 p-6 bg-gray-100 rounded-xl">
+        <h1 class="mb-6 text-3xl">{{ event.event_name }}</h1>
+        <p class="text-gray-500"><strong>Date: </strong>{{ event.date }}</p>
+        <p class="text-gray-500"><strong>Time: </strong>{{ event.time }}</p>
+        <p class="text-gray-500"><strong>Location: </strong>{{ event.location }}</p>
+    
+        {% if event.description %}
+            <p class="text-gray-700">
+                <strong class="text-gray-500">Description:</strong><br>
+                {{ event.description }}
+            </p>
+        {% endif %}
+
+        {% if request.user == event.user %}
+            <div class="mt-6 p-6 bg-white rounded-xl">
+                <p>This is your event!</p>
+
+                <a href="{% url 'item:edit' event.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-blue-500 text-white rounded-xl">Edit</a>
+                <a href="{% url 'item:delete' event.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-red-500 text-white rounded-xl">Delete</a>
+            </div>
+        {% else %}  
+            <a href="#" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-blue-500 text-white rounded-xl hover:bg-blue-700">Contact organizer</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    <h2 class="mb-12 text-2xl text-center">Related events</h2>
+
+    <div class="grid grid-cols-3 gap-3">
+        {% for related_event in related_events %}
+            <div>
+                <a href="{% url 'event:detail' related_event.id %}">
+                    <div>
+                        <img src="{{ related_event.image.url }}" class="rounded-t-xl">
+                    </div>
+
+                    <div class="p-6 bg-white rounded-b-xl">
+                        <h2 class="text-2xl">{{ related_event.event_name }}</h2>
+                        <p class="text-gray-500">Date: {{ related_event.date }}</p>
+                        <p class="text-gray-500">Time: {{ related_event.time }}</p>
+                        <p class="text-gray-500">Location: {{ related_event.location }}</p>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+                </div>
+            
+        </div>
+    </div>
+</div>
+
