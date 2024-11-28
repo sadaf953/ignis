@@ -1,5 +1,8 @@
 # ignis
 Submission of the Assignment 
+
+🌐 Live Project: [https://mahvishsadaf.pythonanywhere.com/](https://mahvishsadaf.pythonanywhere.com/)
+
 ![Browse Events](images/browse-event.png)
 ![Sign Up](images/sign-up.png)
 ![Login](images/login.png)
@@ -7,4 +10,3 @@ Submission of the Assignment
 ![Event Details, Delete, Edit](images/details-delete-edit.png)
 ![Dashboard](images/dashboard.png)
 ![Add New Event](images/new.png)
-
